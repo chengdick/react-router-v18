@@ -8,3 +8,4 @@ coverage
 packages
 website
 text
+/examples/__build__
