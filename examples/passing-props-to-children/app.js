@@ -1,6 +1,6 @@
 import React from 'react'
 import createReactClass from 'create-react-class'
-import { render } from 'react-dom'
+import { render } from '../renderHelper'
 import { browserHistory, Router, Route, Link, withRouter } from 'react-router'
 
 import withExampleBasename from '../withExampleBasename'

@@ -1,31 +1,47 @@
+/*
+ * @Author: chengshuping 13816983864@163.com
+ * @Date: 2019-08-24 01:23:36
+ * @LastEditors: chengshuping 13816983864@163.com
+ * @LastEditTime: 2025-12-30 10:18:58
+ * @FilePath: /react-router-3.2.4/examples/animations/app.js
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import React from 'react'
-import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup'
-import { render } from 'react-dom'
+import { CSSTransition, TransitionGroup } from 'react-transition-group'
+import { render } from '../renderHelper'
 import { browserHistory, Router, Route, IndexRoute, Link } from 'react-router'
 
 import withExampleBasename from '../withExampleBasename'
 
 import './app.css'
 
-const App = ({ children, location }) => (
-  <div>
-    <ul>
-      <li><Link to="/page1">Page 1</Link></li>
-      <li><Link to="/page2">Page 2</Link></li>
-    </ul>
+const App = ({ children, location }) => {
+  // Create a ref for the CSSTransition node to avoid findDOMNode warning
+  const nodeRef = React.useRef(null)
+  
+  return (
+    <div>
+      <ul>
+        <li><Link to="/page1">Page 1</Link></li>
+        <li><Link to="/page2">Page 2</Link></li>
+      </ul>
 
-    <CSSTransitionGroup
-      component="div"
-      transitionName="example"
-      transitionEnterTimeout={500}
-      transitionLeaveTimeout={500}
-    >
-      {React.cloneElement(children, {
-        key: location.pathname
-      })}
-    </CSSTransitionGroup>
-  </div>
-)
+      <TransitionGroup component="div">
+        <CSSTransition
+          key={location.pathname}
+          nodeRef={nodeRef}
+          timeout={500}
+          classNames="example"
+          unmountOnExit
+        >
+          <div ref={nodeRef}>
+            {children}
+          </div>
+        </CSSTransition>
+      </TransitionGroup>
+    </div>
+  )
+}
 
 const Index = () => (
   <div className="Image">

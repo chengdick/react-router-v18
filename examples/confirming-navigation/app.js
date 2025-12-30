@@ -1,6 +1,6 @@
 import React from 'react'
 import createReactClass from 'create-react-class'
-import { render } from 'react-dom'
+import { render } from '../renderHelper'
 import { browserHistory, Router, Route, Link, withRouter } from 'react-router'
 
 import withExampleBasename from '../withExampleBasename'
@@ -28,7 +28,7 @@ const Dashboard = createReactClass({
 const Form = withRouter(
   createReactClass({
 
-    componentWillMount() {
+    componentDidMount() {
       this.props.router.setRouteLeaveHook(
         this.props.route,
         this.routerWillLeave
@@ -67,7 +67,7 @@ const Form = withRouter(
         <div>
           <form onSubmit={this.handleSubmit}>
             <p>Click the dashboard link with text in the input.</p>
-            <input type="text" ref="userInput" value={this.state.textValue} onChange={this.handleChange} />
+            <input type="text" ref={(el) => { this.userInputRef = el }} value={this.state.textValue} onChange={this.handleChange} />
             <button type="submit">Go</button>
           </form>
         </div>

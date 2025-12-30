@@ -1,7 +1,7 @@
 import expect, { spyOn } from 'expect'
 import React, { Component } from 'react'
 import { Simulate } from 'react-dom/test-utils'
-import { render } from 'react-dom'
+import { render } from './testHelpers'
 import createHistory from '../createMemoryHistory'
 import hashHistory from '../hashHistory'
 import Router from '../Router'

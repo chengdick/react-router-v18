@@ -1,6 +1,6 @@
 import React from 'react'
 import createReactClass from 'create-react-class'
-import { render, findDOMNode } from 'react-dom'
+import { render } from '../renderHelper'
 import { browserHistory, Router, Route, IndexRoute, Link, withRouter } from 'react-router'
 
 import withExampleBasename from '../withExampleBasename'
@@ -16,11 +16,8 @@ const App = createReactClass({
     }
   },
 
-  componentWillMount() {
-    ContactStore.init()
-  },
-
   componentDidMount() {
+    ContactStore.init()
     ContactStore.addChangeListener(this.updateContacts)
   },
 
@@ -85,8 +82,10 @@ const Contact = withRouter(
       ContactStore.removeChangeListener(this.updateContact)
     },
 
-    componentWillReceiveProps(nextProps) {
-      this.setState(this.getStateFromStore(nextProps))
+    componentDidUpdate(prevProps) {
+      if (prevProps.params.id !== this.props.params.id) {
+        this.setState(this.getStateFromStore())
+      }
     },
 
     updateContact() {
@@ -122,8 +121,8 @@ const NewContact = withRouter(
       event.preventDefault()
 
       ContactStore.addContact({
-        first: findDOMNode(this.refs.first).value,
-        last: findDOMNode(this.refs.last).value
+        first: this.firstRef.value,
+        last: this.lastRef.value
       }, (contact) => {
         this.props.router.push(`/contact/${contact.id}`)
       })
@@ -133,8 +132,8 @@ const NewContact = withRouter(
       return (
         <form onSubmit={this.createContact}>
           <p>
-            <input type="text" ref="first" placeholder="First name" />
-            <input type="text" ref="last" placeholder="Last name" />
+            <input type="text" ref={(el) => { this.firstRef = el }} placeholder="First name" />
+            <input type="text" ref={(el) => { this.lastRef = el }} placeholder="Last name" />
           </p>
           <p>
             <button type="submit">Save</button> <Link to="/">Cancel</Link>

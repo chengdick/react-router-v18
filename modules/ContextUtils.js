@@ -15,8 +15,6 @@ function makeContextName(name) {
   return `@@contextSubscriber/${name}`
 }
 
-const prefixUnsafeLifecycleMethods = parseFloat(React.version) >= 16.3
-
 export function ContextProvider(name) {
   const contextName = makeContextName(name)
   const listenersKey = `${contextName}/listeners`
@@ -24,11 +22,20 @@ export function ContextProvider(name) {
   const subscribeKey = `${contextName}/subscribe`
 
   const config = {
+    // Legacy context API - kept for backward compatibility but deprecated
+    // This is used for internal subscription mechanism to handle context updates
     childContextTypes: {
       [contextName]: contextProviderShape.isRequired
     },
 
     getChildContext() {
+      // Initialize on first access if not already initialized
+      // This replaces componentWillMount logic
+      if (this[listenersKey] === undefined) {
+        this[listenersKey] = []
+        this[eventIndexKey] = 0
+      }
+
       return {
         [contextName]: {
           eventIndex: this[eventIndexKey],
@@ -37,41 +44,48 @@ export function ContextProvider(name) {
       }
     },
 
-    // this method will be updated to UNSAFE_componentWillMount below for React versions >= 16.3
-    componentWillMount() {
-      this[listenersKey] = []
-      this[eventIndexKey] = 0
+    componentDidMount() {
+      // Ensure initialization (in case getChildContext wasn't called yet)
+      if (this[listenersKey] === undefined) {
+        this[listenersKey] = []
+        this[eventIndexKey] = 0
+      }
     },
 
-    // this method will be updated to UNSAFE_componentWillReceiveProps below for React versions >= 16.3
-    componentWillReceiveProps() {
-      this[eventIndexKey]++
-    },
+    componentDidUpdate(prevProps) {
+      // Moved from componentWillReceiveProps - increment eventIndex on updates
+      // This ensures context subscribers are notified of changes
+      // Note: componentDidUpdate is called after render, so we increment here
+      // and notify listeners, similar to the original componentWillReceiveProps + componentDidUpdate behavior
+      if (prevProps !== this.props) {
+        this[eventIndexKey]++
+      }
 
-    componentDidUpdate() {
-      this[listenersKey].forEach(listener =>
-        listener(this[eventIndexKey])
-      )
+      // Notify listeners after update (original componentDidUpdate logic)
+      if (this[listenersKey]) {
+        this[listenersKey].forEach(listener =>
+          listener(this[eventIndexKey])
+        )
+      }
     },
 
     [subscribeKey](listener) {
       // No need to immediately call listener here.
+      if (!this[listenersKey]) {
+        this[listenersKey] = []
+      }
       this[listenersKey].push(listener)
 
       return () => {
-        this[listenersKey] = this[listenersKey].filter(item =>
-          item !== listener
-        )
+        if (this[listenersKey]) {
+          this[listenersKey] = this[listenersKey].filter(item =>
+            item !== listener
+          )
+        }
       }
     }
   }
 
-  if (prefixUnsafeLifecycleMethods) {
-    config.UNSAFE_componentWillMount = config.componentWillMount
-    config.UNSAFE_componentWillReceiveProps = config.componentWillReceiveProps
-    delete config.componentWillMount
-    delete config.componentWillReceiveProps
-  }
   return config
 }
 
@@ -82,6 +96,8 @@ export function ContextSubscriber(name) {
   const unsubscribeKey = `${contextName}/unsubscribe`
 
   const config = {
+    // Legacy context API - kept for backward compatibility but deprecated
+    // This is used for internal subscription mechanism to handle context updates
     contextTypes: {
       [contextName]: contextProviderShape
     },
@@ -106,15 +122,20 @@ export function ContextSubscriber(name) {
       )
     },
 
-    // this method will be updated to UNSAFE_componentWillReceiveProps below for React versions >= 16.3
-    componentWillReceiveProps() {
+    componentDidUpdate(prevProps, prevState) {
+      // Moved from componentWillReceiveProps - update state when context changes
       if (!this.context[contextName]) {
         return
       }
 
-      this.setState({
-        [lastRenderedEventIndexKey]: this.context[contextName].eventIndex
-      })
+      const currentEventIndex = this.context[contextName].eventIndex
+      const lastRenderedIndex = this.state[lastRenderedEventIndexKey]
+
+      if (currentEventIndex !== lastRenderedIndex) {
+        this.setState({
+          [lastRenderedEventIndexKey]: currentEventIndex
+        })
+      }
     },
 
     componentWillUnmount() {
@@ -133,9 +154,5 @@ export function ContextSubscriber(name) {
     }
   }
 
-  if (prefixUnsafeLifecycleMethods) {
-    config.UNSAFE_componentWillReceiveProps = config.componentWillReceiveProps
-    delete config.componentWillReceiveProps
-  }
   return config
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { render } from 'react-dom'
+import { render } from '../renderHelper'
 import { browserHistory, Router } from 'react-router'
 
 import withExampleBasename from '../withExampleBasename'

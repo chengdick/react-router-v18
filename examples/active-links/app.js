@@ -1,5 +1,5 @@
 import React from 'react'
-import { render } from 'react-dom'
+import { render } from '../renderHelper'
 import { Router, Route, IndexRoute, Link, IndexLink, browserHistory } from 'react-router'
 
 import withExampleBasename from '../withExampleBasename'

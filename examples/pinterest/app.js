@@ -1,6 +1,6 @@
 import React from 'react'
 import createReactClass from 'create-react-class'
-import { render } from 'react-dom'
+import { render } from '../renderHelper'
 import { browserHistory, Router, Route, IndexRoute, Link } from 'react-router'
 
 import withExampleBasename from '../withExampleBasename'
@@ -36,25 +36,34 @@ const Modal = createReactClass({
 
 const App = createReactClass({
 
-  componentWillReceiveProps(nextProps) {
+  getInitialState() {
+    return {
+      previousChildren: null
+    }
+  },
+
+  componentDidUpdate(prevProps) {
     // if we changed routes...
     if ((
-      nextProps.location.key !== this.props.location.key &&
-      nextProps.location.state &&
-      nextProps.location.state.modal
+      this.props.location.key !== prevProps.location.key &&
+      this.props.location.state &&
+      this.props.location.state.modal
     )) {
       // save the old children (just like animation)
-      this.previousChildren = this.props.children
+      this.setState({
+        previousChildren: prevProps.children
+      })
     }
   },
 
   render() {
     let { location } = this.props
+    const previousChildren = this.state.previousChildren
 
     let isModal = (
       location.state &&
       location.state.modal &&
-      this.previousChildren
+      previousChildren
     )
 
     return (
@@ -63,7 +72,7 @@ const App = createReactClass({
 
         <div>
           {isModal ?
-            this.previousChildren :
+            previousChildren :
             this.props.children
           }
 

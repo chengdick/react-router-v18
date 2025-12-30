@@ -17,7 +17,7 @@ const App = createReactClass({
     })
   },
 
-  componentWillMount() {
+  componentDidMount() {
     auth.onChange = this.updateAuth
     auth.login()
   },

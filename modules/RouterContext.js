@@ -5,8 +5,8 @@ import createReactClass from 'create-react-class'
 import { array, func, object } from 'prop-types'
 
 import getRouteParams from './getRouteParams'
-import { ContextProvider } from './ContextUtils'
 import { isReactChildren } from './RouteUtils'
+import { RouterContext as RouterContextProvider } from './RouterContextProvider'
 
 /**
  * A <RouterContext> renders the component tree for a given router state
@@ -14,8 +14,6 @@ import { isReactChildren } from './RouteUtils'
  */
 const RouterContext = createReactClass({
   displayName: 'RouterContext',
-
-  mixins: [ ContextProvider('router') ],
 
   propTypes: {
     router: object.isRequired,
@@ -29,16 +27,6 @@ const RouterContext = createReactClass({
   getDefaultProps() {
     return {
       createElement: React.createElement
-    }
-  },
-
-  childContextTypes: {
-    router: object.isRequired
-  },
-
-  getChildContext() {
-    return {
-      router: this.props.router
     }
   },
 
@@ -102,7 +90,13 @@ const RouterContext = createReactClass({
       'The root route must render a single element'
     )
 
-    return element
+    // Use new Context Provider for React 18 compatibility
+    // This replaces the legacy childContextTypes API
+    return (
+      <RouterContextProvider.Provider value={router}>
+        {element}
+      </RouterContextProvider.Provider>
+    )
   }
 
 })

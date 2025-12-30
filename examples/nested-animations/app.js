@@ -1,6 +1,14 @@
+/*
+ * @Author: chengshuping 13816983864@163.com
+ * @Date: 2019-08-24 01:23:36
+ * @LastEditors: chengshuping 13816983864@163.com
+ * @LastEditTime: 2025-12-30 10:18:21
+ * @FilePath: /react-router-3.2.4/examples/nested-animations/app.js
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import React from 'react'
-import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup'
-import { render } from 'react-dom'
+import { CSSTransition, TransitionGroup } from 'react-transition-group'
+import { render } from '../renderHelper'
 import { browserHistory, Router, Route, Link } from 'react-router'
 
 import withExampleBasename from '../withExampleBasename'
@@ -10,6 +18,7 @@ import './app.css'
 const App = ({ children, location: { pathname } }) => {
   // Only take the first-level part of the path as key, instead of the whole path.
   const key = pathname.split('/')[1] || 'root'
+  const nodeRef = React.useRef(null)
 
   return (
     <div>
@@ -17,47 +26,76 @@ const App = ({ children, location: { pathname } }) => {
         <li><Link to="/page1">Page 1</Link></li>
         <li><Link to="/page2">Page 2</Link></li>
       </ul>
-      <CSSTransitionGroup
-        component="div" transitionName="swap"
-        transitionEnterTimeout={500} transitionLeaveTimeout={500}
-      >
-        {React.cloneElement(children || <div />, { key })}
-      </CSSTransitionGroup>
+      <TransitionGroup component="div">
+        <CSSTransition
+          key={key}
+          nodeRef={nodeRef}
+          timeout={500}
+          classNames="swap"
+          unmountOnExit
+        >
+          <div ref={nodeRef}>
+            {children || <div />}
+          </div>
+        </CSSTransition>
+      </TransitionGroup>
     </div>
   )
 }
 
-const Page1 = ({ children, location: { pathname } }) => (
-  <div className="Image">
-    <h1>Page 1</h1>
-    <ul>
-      <li><Link to="/page1/tab1">Tab 1</Link></li>
-      <li><Link to="/page1/tab2">Tab 2</Link></li>
-    </ul>
-    <CSSTransitionGroup
-      component="div" transitionName="example"
-      transitionEnterTimeout={500} transitionLeaveTimeout={500}
-    >
-      {React.cloneElement(children || <div/>, { key: pathname })}
-    </CSSTransitionGroup>
-  </div>
-)
+const Page1 = ({ children, location: { pathname } }) => {
+  const nodeRef = React.useRef(null)
+  
+  return (
+    <div className="Image">
+      <h1>Page 1</h1>
+      <ul>
+        <li><Link to="/page1/tab1">Tab 1</Link></li>
+        <li><Link to="/page1/tab2">Tab 2</Link></li>
+      </ul>
+      <TransitionGroup component="div">
+        <CSSTransition
+          key={pathname}
+          nodeRef={nodeRef}
+          timeout={500}
+          classNames="example"
+          unmountOnExit
+        >
+          <div ref={nodeRef}>
+            {children || <div/>}
+          </div>
+        </CSSTransition>
+      </TransitionGroup>
+    </div>
+  )
+}
 
-const Page2 = ({ children, location: { pathname } }) => (
-  <div className="Image">
-    <h1>Page 2</h1>
-    <ul>
-      <li><Link to="/page2/tab1">Tab 1</Link></li>
-      <li><Link to="/page2/tab2">Tab 2</Link></li>
-    </ul>
-    <CSSTransitionGroup
-      component="div" transitionName="example"
-      transitionEnterTimeout={500} transitionLeaveTimeout={500}
-    >
-      {React.cloneElement(children || <div/>, { key: pathname })}
-    </CSSTransitionGroup>
-  </div>
-)
+const Page2 = ({ children, location: { pathname } }) => {
+  const nodeRef = React.useRef(null)
+  
+  return (
+    <div className="Image">
+      <h1>Page 2</h1>
+      <ul>
+        <li><Link to="/page2/tab1">Tab 1</Link></li>
+        <li><Link to="/page2/tab2">Tab 2</Link></li>
+      </ul>
+      <TransitionGroup component="div">
+        <CSSTransition
+          key={pathname}
+          nodeRef={nodeRef}
+          timeout={500}
+          classNames="example"
+          unmountOnExit
+        >
+          <div ref={nodeRef}>
+            {children || <div/>}
+          </div>
+        </CSSTransition>
+      </TransitionGroup>
+    </div>
+  )
+}
 
 const Tab1 = () => (
   <div className="Image">

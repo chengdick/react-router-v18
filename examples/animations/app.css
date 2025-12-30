@@ -4,22 +4,23 @@
   width: 400px;
 }
 
+/* React Transition Group v4+ API - using classNames */
 .example-enter {
   opacity: 0.01;
-  transition: opacity .5s ease-in;
 }
 
-.example-enter.example-enter-active {
-  opacity: 1;
-}
-
-.example-leave {
+.example-enter-active {
   opacity: 1;
   transition: opacity .5s ease-in;
 }
 
-.example-leave.example-leave-active {
+.example-exit {
+  opacity: 1;
+}
+
+.example-exit-active {
   opacity: 0;
+  transition: opacity .5s ease-in;
 }
 
 .link-active {
