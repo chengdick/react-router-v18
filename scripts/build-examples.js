@@ -59,28 +59,29 @@ umdFiles.forEach(file => {
 // 修复 GitHub Pages 路径问题
 console.log('修复 GitHub Pages 路径...')
 
+// 查找所有 HTML 文件的函数
+function findHtmlFiles(dir, htmlFiles) {
+  const files = fs.readdirSync(dir)
+  files.forEach(file => {
+    const filePath = path.join(dir, file)
+    const stat = fs.statSync(filePath)
+    if (stat.isDirectory()) {
+      findHtmlFiles(filePath, htmlFiles)
+    } else if (file === 'index.html') {
+      htmlFiles.push(filePath)
+    }
+  })
+}
+
 // 使用之前提取的 basePath
 if (basePath && basePath !== '/') {
   console.log(`使用基础路径: ${basePath}`)
   
-  // 修复所有 HTML 文件中的绝对路径1
+  // 修复所有 HTML 文件中的绝对路径
   const examplesDir = path.join(__dirname, '..', 'examples')
   const htmlFiles = []
   
-  function findHtmlFiles(dir) {
-    const files = fs.readdirSync(dir)
-    files.forEach(file => {
-      const filePath = path.join(dir, file)
-      const stat = fs.statSync(filePath)
-      if (stat.isDirectory()) {
-        findHtmlFiles(filePath)
-      } else if (file === 'index.html') {
-        htmlFiles.push(filePath)
-      }
-    })
-  }
-  
-  findHtmlFiles(examplesDir)
+  findHtmlFiles(examplesDir, htmlFiles)
   
   htmlFiles.forEach(htmlFile => {
     let content = fs.readFileSync(htmlFile, 'utf8')
