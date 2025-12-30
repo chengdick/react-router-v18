@@ -9,9 +9,17 @@ module.exports = {
   devtool: 'inline-source-map',
 
   entry: fs.readdirSync(__dirname).reduce(function (entries, dir) {
-    if (fs.statSync(path.join(__dirname, dir)).isDirectory())
-      entries[dir] = path.join(__dirname, dir, 'app.js')
-
+    // 排除 __build__ 目录和其他非示例目录
+    if (dir === '__build__' || dir.startsWith('.')) {
+      return entries
+    }
+    var dirPath = path.join(__dirname, dir)
+    if (fs.statSync(dirPath).isDirectory()) {
+      var appJsPath = path.join(dirPath, 'app.js')
+      if (fs.existsSync(appJsPath)) {
+        entries[dir] = appJsPath
+      }
+    }
     return entries
   }, {}),
 
