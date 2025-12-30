@@ -63,7 +63,7 @@ console.log('修复 GitHub Pages 路径...')
 if (basePath && basePath !== '/') {
   console.log(`使用基础路径: ${basePath}`)
   
-  // 修复所有 HTML 文件中的绝对路径
+  // 修复所有 HTML 文件中的绝对路径1
   const examplesDir = path.join(__dirname, '..', 'examples')
   const htmlFiles = []
   
