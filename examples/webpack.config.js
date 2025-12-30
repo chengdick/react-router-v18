@@ -52,7 +52,8 @@ module.exports = {
   plugins: [
     new webpack.optimize.CommonsChunkPlugin('shared.js'),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+      '__GITHUB_PAGES_BASE_PATH__': JSON.stringify(process.env.GITHUB_PAGES_BASE_PATH || '')
     })
   ]
 
