@@ -56,6 +56,8 @@ jobs:
     
     - name: 设置 Pages
       uses: actions/configure-pages@v4
+      with:
+        enablement: true  # 自动启用 GitHub Pages（如果未启用）
     
     - name: 上传构建产物
       uses: actions/upload-pages-artifact@v3
