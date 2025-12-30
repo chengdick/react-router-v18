@@ -9,9 +9,38 @@ before_install:
 - export CHROME_BIN=chromium-browser
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
+
+# 安装依赖和运行测试
+install:
+- npm install
+
+# 运行测试
+script:
+- npm run lint
+- npm run test-node
+# 可选：如果需要浏览器测试，取消下面的注释
+# - npm run test-browser
+
+# 测试成功后
 after_success:
-- node_modules/.bin/codecov
+- node_modules/.bin/codecov || true
+
+# 构建示例用于 GitHub Pages
+before_deploy:
+- npm run build-examples
+
+# 部署到 GitHub Pages
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN  # 在 Travis CI 项目设置中配置环境变量
+  local_dir: examples
+  on:
+    branch: master
+  keep_history: true
+  target_branch: gh-pages
+
+# 分支配置
 branches:
   only:
   - master
-  - next

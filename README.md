@@ -14,6 +14,20 @@ React Router is a complete routing library for [React](https://facebook.github.i
 - ✅ **No Deprecation Warnings** - All React 18 warnings resolved
 - ✅ **Backward Compatible** - Maintains React Router 3.2.4 API compatibility
 
+## 🚀 Live Demo
+
+View live examples on GitHub Pages:
+
+**[👉 View All Examples](https://chengdick.github.io/react-router-v18/)**
+
+Examples include:
+- Active Links
+- Animations
+- Auth Flow
+- Master Detail
+- Pinterest-style UI
+- And more...
+
 ## 📚 Documentation
 
 - **[Upgrade Documentation](./UPGRADE_TO_REACT_18.md)** - Complete guide to React 18/19 upgrade changes
