@@ -19,7 +19,15 @@ module.exports = {
     path: __dirname + '/__build__',
     filename: '[name].js',
     chunkFilename: '[id].chunk.js',
-    publicPath: '/__build__/'
+    // 从环境变量或 package.json 获取基础路径
+    publicPath: (function() {
+      var basePath = process.env.GITHUB_PAGES_BASE_PATH || ''
+      if (basePath && basePath !== '/') {
+        basePath = basePath.replace(/\/$/, '')
+        return basePath + '/__build__/'
+      }
+      return '/__build__/'
+    })()
   },
 
   module: {
