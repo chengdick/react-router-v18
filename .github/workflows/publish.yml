@@ -1,0 +1,93 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*'  # 当推送以 v 开头的标签时触发（如 v1.0.0）
+  workflow_dispatch:  # 允许手动触发（发布当前版本）
+
+permissions:
+  contents: write  # 用于创建 git tag
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 获取完整历史记录和标签
+    
+    - name: 设置 Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        registry-url: 'https://registry.npmjs.org'
+        cache: 'yarn'
+    
+    - name: 安装依赖
+      run: yarn install --frozen-lockfile
+    
+    - name: 运行 Lint
+      run: yarn lint
+    
+    - name: 运行测试
+      run: yarn test-node
+    
+    - name: 构建项目
+      run: yarn build
+    
+    - name: 检查当前版本
+      id: version
+      run: |
+        VERSION=$(node -p "require('./package.json').version")
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "当前版本: $VERSION"
+    
+    - name: 检查版本是否已发布
+      id: check
+      run: |
+        VERSION=${{ steps.version.outputs.version }}
+        if npm view react-router-v18@$VERSION version > /dev/null 2>&1; then
+          echo "published=true" >> $GITHUB_OUTPUT
+          echo "⚠️ 版本 $VERSION 已发布，跳过发布"
+        else
+          echo "published=false" >> $GITHUB_OUTPUT
+          echo "✅ 版本 $VERSION 未发布，将继续发布"
+        fi
+    
+    - name: 发布到 npm
+      if: steps.check.outputs.published != 'true'
+      run: |
+        echo "正在发布版本 ${{ steps.version.outputs.version }} 到 npm..."
+        npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    
+    - name: 跳过已发布版本
+      if: steps.check.outputs.published == 'true'
+      run: |
+        echo "版本 ${{ steps.version.outputs.version }} 已发布，跳过发布步骤"
+    
+    - name: 创建 GitHub Release
+      if: github.event_name == 'push'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: Release ${{ github.ref_name }}
+        body: |
+          ## 变更内容
+          
+          查看 [CHANGES.md](./CHANGES.md) 了解详细变更。
+          
+          ## 安装
+          
+          ```bash
+          npm install react-router-v18@${{ github.ref_name }}
+          ```
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

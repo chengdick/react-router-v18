@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 20.x]
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+    
+    - name: 设置 Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'yarn'
+    
+    - name: 安装依赖
+      run: yarn install --frozen-lockfile
+    
+    - name: 运行 Lint
+      run: yarn lint
+    
+    - name: 运行 Node.js 测试
+      run: yarn test-node
+    
+    - name: 上传代码覆盖率
+      if: matrix.node-version == '18.x'
+      run: |
+        yarn run codecov || npx codecov || true
+      continue-on-error: true
