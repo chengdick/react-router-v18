@@ -20,7 +20,7 @@ module.exports = {
     filename: '[name].js',
     chunkFilename: '[id].chunk.js',
     // 从环境变量或 package.json 获取基础路径
-    publicPath: (function() {
+    publicPath: (function () {
       var basePath = process.env.GITHUB_PAGES_BASE_PATH || ''
       if (basePath && basePath !== '/') {
         basePath = basePath.replace(/\/$/, '')

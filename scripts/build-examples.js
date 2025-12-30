@@ -23,7 +23,7 @@ const homepage = packageJson.homepage || ''
 let basePath = ''
 if (homepage) {
   try {
-    const url = new URL(homepage)
+    const url = new URL (homepage)
     basePath = url.pathname
     if (basePath && basePath !== '/') {
       basePath = basePath.replace(/\/$/, '')
