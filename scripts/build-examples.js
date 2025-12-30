@@ -5,7 +5,7 @@ const path = require('path')
 
 function exec(command) {
   console.log(`执行: ${command}`)
-  execSync(command, { stdio: [0, 1, 2] })
+  execSync(command, { stdio: [ 0, 1, 2 ] })
 }
 
 // 构建 UMD 版本用于示例
@@ -25,7 +25,7 @@ if (!fs.existsSync(buildDir)) {
   fs.mkdirSync(buildDir, { recursive: true })
 }
 
-const umdFiles = ['ReactRouter.js', 'ReactRouter.min.js']
+const umdFiles = [ 'ReactRouter.js', 'ReactRouter.min.js' ]
 umdFiles.forEach(file => {
   const src = path.join(__dirname, '..', 'umd', file)
   const dest = path.join(buildDir, file)
