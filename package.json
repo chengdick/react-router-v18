@@ -12,9 +12,12 @@
   "main": "lib/index",
   "module": "es/index",
   "jsnext:main": "es/index",
-  "repository": "ReactTraining/react-router",
-  "homepage": "https://github.com/ReactTraining/react-router#readme",
-  "bugs": "https://github.com/ReactTraining/react-router/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chengdick/react-router-v18.git"
+  },
+  "homepage": "https://github.com/chengdick/react-router-v18#readme",
+  "bugs": "https://github.com/chengdick/react-router-v18/issues",
   "scripts": {
     "build": "npm run build-cjs && npm run build-es",
     "build-cjs": "rimraf lib && cross-env BABEL_ENV=cjs babel ./modules -d lib --ignore __tests__",
@@ -44,7 +47,7 @@
     "warning": "^3.0.0"
   },
   "peerDependencies": {
-    "react": "^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0"
+    "react": "^16.3.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",

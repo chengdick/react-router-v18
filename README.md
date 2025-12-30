@@ -24,6 +24,10 @@ The next version of React Router (4.0) has been released! Check out the `master`
 - [Stack Overflow](http://stackoverflow.com/questions/tagged/react-router)
 - [CodePen boilerplate](http://codepen.io/anon/pen/xwQZdy?editors=001) for bug reports
 
+### React 18/19 Support
+
+This version has been upgraded to support React 16.3+, 17, 18, and 19. See [UPGRADE_TO_REACT_18.md](./UPGRADE_TO_REACT_18.md) for detailed upgrade documentation.
+
 **Older Versions:**
 
 - 0.13.x - [docs](https://github.com/ReactTraining/react-router/tree/v0.13.6/doc) / [guides](https://github.com/ReactTraining/react-router/tree/v0.13.6/docs/guides) / [code](https://github.com/ReactTraining/react-router/tree/v0.13.6) / [upgrade guide](/upgrade-guides/v1.0.0.md)
