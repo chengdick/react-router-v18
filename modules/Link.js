@@ -1,5 +1,4 @@
-import React from 'react'
-import createReactClass from 'create-react-class'
+import React, { Component } from 'react'
 import { bool, object, string, func, oneOfType } from 'prop-types'
 import invariant from 'invariant'
 import { RouterContext as RouterContextProvider } from './RouterContextProvider'
@@ -38,10 +37,9 @@ function resolveToLocation(to, router) {
  *
  *   <Link to={`/posts/${post.id}`} />
  */
-const Link = createReactClass({
-  displayName: 'Link',
-
-  propTypes: {
+class Link extends Component {
+  static displayName = 'Link'
+  static propTypes = {
     to: oneOfType([ string, object, func ]),
     activeStyle: object,
     activeClassName: string,
@@ -49,14 +47,11 @@ const Link = createReactClass({
     onClick: func,
     target: string,
     innerRef: oneOfType([ string, func ])
-  },
-
-  getDefaultProps() {
-    return {
-      onlyActiveOnIndex: false,
-      style: {}
-    }
-  },
+  }
+  static defaultProps = {
+    onlyActiveOnIndex: false,
+    style: {}
+  }
 
   handleClick(event, router) {
     if (this.props.onClick)
@@ -81,7 +76,7 @@ const Link = createReactClass({
     event.preventDefault()
 
     router.push(resolveToLocation(this.props.to, router))
-  },
+  }
 
   render() {
     const { to, activeClassName, activeStyle, onlyActiveOnIndex, innerRef, ...props } = this.props
@@ -122,7 +117,6 @@ const Link = createReactClass({
       </RouterContextProvider.Consumer>
     )
   }
-
-})
+}
 
 export default Link

@@ -1,4 +1,4 @@
-import createReactClass from 'create-react-class'
+import { Component } from 'react'
 import { string, func } from 'prop-types'
 import invariant from 'invariant'
 import { createRouteFromReactElement } from './RouteUtils'
@@ -15,20 +15,16 @@ import { component, components } from './InternalPropTypes'
  * rendered into the DOM, nested in the same order as in the tree.
  */
 /* eslint-disable react/require-render-return */
-const Route = createReactClass({
-  displayName: 'Route',
-
-  statics: {
-    createRouteFromReactElement
-  },
-
-  propTypes: {
+class Route extends Component {
+  static displayName = 'Route'
+  static createRouteFromReactElement = createRouteFromReactElement
+  static propTypes = {
     path: string,
     component,
     components,
     getComponent: func,
     getComponents: func
-  },
+  }
 
   /* istanbul ignore next: sanity check */
   render() {
@@ -37,7 +33,6 @@ const Route = createReactClass({
       '<Route> elements are for router configuration only and should not be rendered'
     )
   }
-
-})
+}
 
 export default Route

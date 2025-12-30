@@ -1,4 +1,3 @@
-import React from 'react'
 import PropTypes from 'prop-types'
 
 // Works around issues with context updates failing to propagate.
@@ -122,7 +121,7 @@ export function ContextSubscriber(name) {
       )
     },
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate() {
       // Moved from componentWillReceiveProps - update state when context changes
       if (!this.context[contextName]) {
         return

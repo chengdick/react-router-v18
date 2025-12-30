@@ -1,5 +1,4 @@
-import React from 'react'
-import createClass from 'create-react-class'
+import React, { Component } from 'react'
 import { render } from '../renderHelper'
 import { Router, Route, IndexRoute, browserHistory, Link, withRouter } from 'react-router'
 
@@ -13,42 +12,44 @@ function App(props) {
   )
 }
 
-const Form = withRouter(
-  createClass({
-
-    getInitialState() {
-      return {
-        value: ''
-      }
-    },
-
-    submitAction(event) {
-      event.preventDefault()
-      this.props.router.push({
-        pathname: '/page',
-        query: {
-          qsparam: this.state.value
-        }
-      })
-    },
-
-    handleChange(event) {
-      this.setState({ value: event.target.value })
-    },
-
-    render() {
-      return (
-        <form onSubmit={this.submitAction}>
-          <p>Token is <em>pancakes</em></p>
-          <input type="text" value={this.state.value} onChange={this.handleChange} />
-          <button type="submit">Submit the thing</button>
-          <p><Link to="/page?qsparam=pancakes">Or authenticate via URL</Link></p>
-          <p><Link to="/page?qsparam=bacon">Or try failing to authenticate via URL</Link></p>
-        </form>
-      )
+class Form extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      value: ''
     }
-  })
-)
+    this.submitAction = this.submitAction.bind(this)
+    this.handleChange = this.handleChange.bind(this)
+  }
+
+  submitAction(event) {
+    event.preventDefault()
+    this.props.router.push({
+      pathname: '/page',
+      query: {
+        qsparam: this.state.value
+      }
+    })
+  }
+
+  handleChange(event) {
+    this.setState({ value: event.target.value })
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.submitAction}>
+        <p>Token is <em>pancakes</em></p>
+        <input type="text" value={this.state.value} onChange={this.handleChange} />
+        <button type="submit">Submit the thing</button>
+        <p><Link to="/page?qsparam=pancakes">Or authenticate via URL</Link></p>
+        <p><Link to="/page?qsparam=bacon">Or try failing to authenticate via URL</Link></p>
+      </form>
+    )
+  }
+}
+
+const FormWithRouter = withRouter(Form)
 
 function Page() {
   return <h1>Hey, I see you are authenticated. Welcome!</h1>
@@ -91,7 +92,7 @@ function serverAuth(authToken) {
 render((
   <Router history={withExampleBasename(browserHistory, __dirname)}>
     <Route path="/" component={App}>
-      <IndexRoute component={Form} />
+      <IndexRoute component={FormWithRouter} />
       <Route path="page" component={Page} onEnter={requireCredentials}/>
       <Route path="error" component={ErrorPage}/>
     </Route>

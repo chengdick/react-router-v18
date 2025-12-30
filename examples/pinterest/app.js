@@ -1,5 +1,4 @@
-import React from 'react'
-import createReactClass from 'create-react-class'
+import React, { Component } from 'react'
 import { render } from '../renderHelper'
 import { browserHistory, Router, Route, IndexRoute, Link } from 'react-router'
 
@@ -11,8 +10,8 @@ const PICTURES = [
   { id: 2, src: 'http://placekitten.com/620/620' }
 ]
 
-const Modal = createReactClass({
-  styles: {
+class Modal extends Component {
+  styles = {
     position: 'fixed',
     top: '20%',
     right: '20%',
@@ -22,7 +21,7 @@ const Modal = createReactClass({
     boxShadow: '0px 0px 150px 130px rgba(0, 0, 0, 0.5)',
     overflow: 'auto',
     background: '#fff'
-  },
+  }
 
   render() {
     return (
@@ -32,15 +31,15 @@ const Modal = createReactClass({
       </div>
     )
   }
-})
+}
 
-const App = createReactClass({
-
-  getInitialState() {
-    return {
+class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
       previousChildren: null
     }
-  },
+  }
 
   componentDidUpdate(prevProps) {
     // if we changed routes...
@@ -54,7 +53,7 @@ const App = createReactClass({
         previousChildren: prevProps.children
       })
     }
-  },
+  }
 
   render() {
     let { location } = this.props
@@ -85,9 +84,9 @@ const App = createReactClass({
       </div>
     )
   }
-})
+}
 
-const Index = createReactClass({
+class Index extends Component {
   render() {
     return (
       <div>
@@ -122,9 +121,9 @@ const Index = createReactClass({
       </div>
     )
   }
-})
+}
 
-const Deep = createReactClass({
+class Deep extends Component {
   render() {
     return (
       <div>
@@ -144,9 +143,9 @@ const Deep = createReactClass({
       </div>
     )
   }
-})
+}
 
-const Picture = createReactClass({
+class Picture extends Component {
   render() {
     return (
       <div>
@@ -154,7 +153,7 @@ const Picture = createReactClass({
       </div>
     )
   }
-})
+}
 
 render((
   <Router history={withExampleBasename(browserHistory, __dirname)}>

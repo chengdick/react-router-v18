@@ -1,7 +1,6 @@
 import invariant from 'invariant'
-import React from 'react'
+import React, { Component } from 'react'
 import { isValidElementType } from 'react-is'
-import createReactClass from 'create-react-class'
 import { array, func, object } from 'prop-types'
 
 import getRouteParams from './getRouteParams'
@@ -12,27 +11,23 @@ import { RouterContext as RouterContextProvider } from './RouterContextProvider'
  * A <RouterContext> renders the component tree for a given router state
  * and sets the history object and the current location in context.
  */
-const RouterContext = createReactClass({
-  displayName: 'RouterContext',
-
-  propTypes: {
+class RouterContext extends Component {
+  static displayName = 'RouterContext'
+  static propTypes = {
     router: object.isRequired,
     location: object.isRequired,
     routes: array.isRequired,
     params: object.isRequired,
     components: array.isRequired,
     createElement: func.isRequired
-  },
-
-  getDefaultProps() {
-    return {
-      createElement: React.createElement
-    }
-  },
+  }
+  static defaultProps = {
+    createElement: React.createElement
+  }
 
   createElement(component, props) {
     return component == null ? null : this.props.createElement(component, props)
-  },
+  }
 
   render() {
     const { location, routes, params, components, router } = this.props
@@ -98,7 +93,6 @@ const RouterContext = createReactClass({
       </RouterContextProvider.Provider>
     )
   }
-
-})
+}
 
 export default RouterContext

@@ -35,7 +35,8 @@ export function render(element, container, callback) {
   } else {
     // Fallback to React 17 API (if somehow still using React 17)
     const ReactDOM = require('react-dom')
-    return ReactDOM.render(element, container, callback)
+    ReactDOM.render(element, container, callback)
+    return null
   }
 }
 

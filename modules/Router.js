@@ -1,6 +1,5 @@
 import invariant from 'invariant'
-import React from 'react'
-import createReactClass from 'create-react-class'
+import React, { Component } from 'react'
 import { func, object } from 'prop-types'
 
 import createTransitionManager from './createTransitionManager'
@@ -28,23 +27,21 @@ const propTypes = {
  * a router that renders a <RouterContext> with all the props
  * it needs each time the URL changes.
  */
-const Router = createReactClass({
-  displayName: 'Router',
-
-  propTypes,
-
-  getDefaultProps() {
-    return {
-      render(props) {
-        return <RouterContext {...props} />
-      }
+class Router extends Component {
+  static displayName = 'Router'
+  static propTypes = propTypes
+  static defaultProps = {
+    render(props) {
+      return <RouterContext {...props} />
     }
-  },
+  }
 
-  getInitialState() {
+  constructor(props) {
+    super(props)
+    
     // Initialize transitionManager and router before first render
     // This replaces the logic that was in componentWillMount
-    const { matchContext } = this.props
+    const { matchContext } = props
     const initialState = {
       location: null,
       routes: null,
@@ -55,18 +52,30 @@ const Router = createReactClass({
     if (matchContext) {
       this.transitionManager = matchContext.transitionManager
       this.router = matchContext.router
-      // If we have matchContext with state, use it
+      // When matchContext is provided (from match() function), use the state from props
+      // which contains location, routes, params, components from renderProps
+      if (props.location && props.routes && props.components) {
+        this.state = {
+          location: props.location,
+          routes: props.routes,
+          params: props.params || {},
+          components: props.components
+        }
+        return
+      }
+      // Fallback: If we have matchContext with state, use it
       if (this.transitionManager && this.transitionManager.state && this.transitionManager.state.location) {
         const existingState = this.transitionManager.state
-        return {
+        this.state = {
           location: existingState.location,
           routes: existingState.routes,
           params: existingState.params,
           components: existingState.components
         }
+        return
       }
     } else {
-      const { history, routes, children } = this.props
+      const { history, routes, children } = props
 
       invariant(
         history && history.getCurrentLocation,
@@ -108,12 +117,13 @@ const Router = createReactClass({
         if (this._initialUnlisten) {
           this._initialUnlisten()
         }
-        return {
+        this.state = {
           location: syncState.location,
           routes: syncState.routes,
           params: syncState.params,
           components: syncState.components
         }
+        return
       }
       
       // If there was an error, we'll handle it in componentDidMount
@@ -123,8 +133,8 @@ const Router = createReactClass({
       }
     }
 
-    return initialState
-  },
+    this.state = initialState
+  }
 
   handleError(error) {
     if (this.props.onError) {
@@ -133,7 +143,7 @@ const Router = createReactClass({
       // Throw errors by default so we don't silently swallow them!
       throw error // This error probably occurred in getChildRoutes or getComponents.
     }
-  },
+  }
 
   createRouterObject(state) {
     const { matchContext } = this.props
@@ -143,7 +153,7 @@ const Router = createReactClass({
 
     const { history } = this.props
     return createRouterObject(history, this.transitionManager, state)
-  },
+  }
 
   createTransitionManager() {
     const { matchContext } = this.props
@@ -165,7 +175,7 @@ const Router = createReactClass({
       history,
       createRoutes(routes || children)
     )
-  },
+  }
 
   componentDidMount() {
     // Set up listener for route changes, replacing componentWillMount logic
@@ -197,7 +207,7 @@ const Router = createReactClass({
       this._unlisten = this.transitionManager.listen(listener)
       this._listenerSetup = true
     }
-  },
+  }
 
   componentDidUpdate(prevProps) {
     // Moved from componentWillReceiveProps - warnings about prop changes
@@ -212,7 +222,7 @@ const Router = createReactClass({
         (prevProps.routes || prevProps.children),
       'You cannot change <Router routes>; it will be ignored'
     )
-  },
+  }
 
   componentWillUnmount() {
     if (this._unlisten)
@@ -222,7 +232,7 @@ const Router = createReactClass({
       this._initialUnlisten()
       this._initialUnlisten = null
     }
-  },
+  }
 
   render() {
     const { location, routes, params, components } = this.state
@@ -255,7 +265,6 @@ const Router = createReactClass({
       createElement
     })
   }
-
-})
+}
 
 export default Router

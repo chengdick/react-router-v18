@@ -9,6 +9,7 @@
 - 更新渲染 API（从 `ReactDOM.render` 到 `createRoot`）
 - 修复字符串 ref 警告
 - 更新动画示例使用 `react-transition-group` v4+ API
+- 移除 `create-react-class`，所有组件迁移到 ES6 类组件
 
 ## 支持的 React 版本
 
@@ -92,10 +93,57 @@
 - CSS 类名从 `.example-leave` 改为 `.example-exit`
 - 添加 `nodeRef` 避免 `findDOMNode` 警告
 
-### 6. 依赖更新
+### 6. create-react-class 移除
+
+#### 迁移的文件
+- 所有核心模块组件（`Router.js`, `RouterContext.js`, `Link.js`, `Route.js`, `Redirect.js`, `IndexRoute.js`, `IndexRedirect.js`, `IndexLink.js`, `withRouter.js`）
+- 所有示例文件（15 个文件，包括 `auth-flow`, `master-detail`, `confirming-navigation`, `pinterest`, `passing-props-to-children`, `auth-flow-async-with-query-params` 等）
+- `auth-with-shared-root` 目录下的所有组件（9 个组件文件）
+
+#### 改动内容
+- `createReactClass({...})` → `class ComponentName extends Component {...}`
+- `getInitialState()` → `constructor(props)` 中的 `this.state = {...}`
+- 方法绑定在构造函数中完成：`this.methodName = this.methodName.bind(this)`
+- 保持所有功能不变，仅改变组件定义方式
+
+#### 影响
+- 不再依赖 `create-react-class` 包
+- 代码更现代化，符合 React 18 最佳实践
+- 所有组件使用标准的 ES6 类语法
+
+### 7. hoist-non-react-statics 移除
+
+#### 修改的文件
+- `modules/withRouter.js`
+
+#### 改动内容
+- 移除 `hoist-non-react-statics` 依赖
+- 实现自定义 `hoistStatics` 函数，功能与 `hoist-non-react-statics` 完全一致
+- 支持 `React.forwardRef` 和 `React.memo`
+- 支持 Symbol 属性复制
+- 支持继承的静态方法
+- 使用 `Object.defineProperty` 保留属性描述符
+
+#### 实现细节
+```javascript
+function hoistStatics(targetComponent, sourceComponent, excludelist) {
+  // 复制非 React 静态属性
+  // 支持 forwardRef 和 memo
+  // 使用 Object.defineProperty 保留属性描述符
+  // 递归处理继承的静态方法
+}
+```
+
+#### 影响
+- 减少外部依赖
+- 功能完全一致，无行为变化
+- 代码更可控
+
+### 8. 依赖更新
 
 #### package.json 改动
 - `react-transition-group` 从 `dependencies` 移到 `devDependencies`
+- 移除 `create-react-class` 依赖（不再需要）
 - `peerDependencies` 更新为：`"react": "^16.3.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"`
 - 仓库地址更新为：`https://github.com/chengdick/react-router-v18.git`
 
@@ -124,6 +172,9 @@ RouterContext.displayName = 'RouterContext'
 - 移除：`ContextSubscriber('router')` mixin
 - 移除：`contextTypes: { router: routerShape }`
 - 添加：`<RouterContextProvider.Consumer>` 获取 router
+- 迁移：从 `createReactClass` 到 ES6 类组件
+- 移除：`hoist-non-react-statics` 依赖，使用自定义 `hoistStatics` 函数
+- 实现：完整的 `hoistStatics` 函数，支持 forwardRef、memo、Symbol 属性等
 
 #### `modules/Router.js`
 - `componentWillMount` 逻辑移到 `getInitialState`
@@ -163,6 +214,16 @@ export function unmountComponentAtNode(container) {
 - 修复生命周期方法
 - 修复字符串 ref
 - 更新动画使用新的 API
+- 迁移：从 `createReactClass` 到 ES6 类组件（15 个文件）
+
+#### 示例文件迁移详情
+- `examples/auth-flow/app.js` - 4 个组件迁移
+- `examples/confirming-navigation/app.js` - 3 个组件迁移
+- `examples/master-detail/app.js` - 4 个组件迁移
+- `examples/pinterest/app.js` - 4 个组件迁移
+- `examples/passing-props-to-children/app.js` - 2 个组件迁移
+- `examples/auth-flow-async-with-query-params/app.js` - 1 个组件迁移
+- `examples/auth-with-shared-root/components/*.js` - 9 个组件迁移
 
 ## API 变更
 
@@ -242,9 +303,9 @@ const nodeRef = React.useRef(null)
 ## 兼容性说明
 
 ### 向后兼容
-- 保留了 `createReactClass` 的使用（通过 `create-react-class` 包）
-- 保留了 `prop-types` 的使用
+- 保留了 `prop-types` 的使用（用于开发时类型检查）
 - 核心 API 保持不变，只是内部实现更新
+- 所有组件使用标准的 ES6 类语法，更符合现代 React 实践
 
 ### 不兼容的变更
 - **最低 React 版本要求**：从 React 0.14 提升到 React 16.3
@@ -256,6 +317,8 @@ const nodeRef = React.useRef(null)
 - 字符串 ref - 已移除，使用回调 ref
 - `findDOMNode` - 已移除，使用 ref
 - 旧的 Context API（`childContextTypes`、`contextTypes`）- 在核心模块中已移除
+- `create-react-class` - 已移除，所有组件迁移到 ES6 类组件
+- `hoist-non-react-statics` - 已移除，使用自定义实现
 
 ## 测试验证
 
@@ -300,6 +363,32 @@ const nodeRef = React.useRef(null)
 - **仓库**：https://github.com/chengdick/react-router-v18.git
 - **支持的 React 版本**：^16.3.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
+## 免责声明
+
+**⚠️ Disclaimer / 免责声明**
+
+This is a community-maintained fork of React Router 3.2.4. The original authors and maintainers of React Router are not responsible for this fork or any issues that may arise from using it.
+
+**Use at your own risk.** The maintainers of this fork are not liable for any damages, data loss, or issues that may occur from using this software.
+
+If you use this code, you acknowledge that:
+- This is a modified version of the original React Router
+- The original authors are not associated with this fork
+- You are using this software at your own risk
+- The maintainers of this fork are not responsible for any consequences
+
+---
+
+这是一个社区维护的 React Router 3.2.4 分支版本。React Router 的原始作者和维护者不对此分支或使用它可能出现的任何问题负责。
+
+**使用风险自负。** 此分支的维护者不对使用本软件可能造成的任何损害、数据丢失或问题承担责任。
+
+如果您使用此代码，即表示您承认：
+- 这是原始 React Router 的修改版本
+- 原始作者与此分支无关
+- 您使用本软件的风险由您自行承担
+- 此分支的维护者不对任何后果负责
+
 ## 总结
 
 本次升级成功将 react-router 3.2.4 升级到支持 React 18/19，主要改动包括：
@@ -310,6 +399,8 @@ const nodeRef = React.useRef(null)
 4. ✅ 字符串 ref 修复
 5. ✅ 动画示例更新
 6. ✅ 依赖和配置更新
+7. ✅ create-react-class 移除（所有组件迁移到 ES6 类组件）
+8. ✅ hoist-non-react-statics 移除（使用自定义实现）
 
-所有核心功能保持向后兼容，同时移除了所有废弃 API 的警告。
+所有核心功能保持向后兼容，同时移除了所有废弃 API 的警告。代码更现代化，完全符合 React 18/19 最佳实践。
 

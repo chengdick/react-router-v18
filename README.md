@@ -1,159 +1,256 @@
-# React Router [![Travis][build-badge]][build] [![npm package][npm-badge]][npm]
+# React Router v18
 
 <img src="/logo/vertical@2x.png" height="150"/>
 
-React Router is a complete routing library for [React](https://facebook.github.io/react).
+**React Router v18** is a fork of [React Router 3.2.4](https://github.com/ReactTraining/react-router/tree/v3.2.4) upgraded to support **React 16.3+, 17, 18, and 19**.
 
-React Router keeps your UI in sync with the URL. It has a simple API with powerful features like lazy code loading, dynamic route matching, and location transition handling built right in. Make the URL your first thought, not an after-thought.
+React Router is a complete routing library for [React](https://facebook.github.io/react). It keeps your UI in sync with the URL with a simple API and powerful features like lazy code loading, dynamic route matching, and location transition handling built right in.
 
-[![Codecov][codecov-badge]][codecov]
-[![Discord][discord-badge]][discord]
+## 🎯 Key Features
 
-### 4.0 is here!
+- ✅ **React 18/19 Compatible** - Full support for React 16.3+, 17, 18, and 19
+- ✅ **Modern Context API** - Uses `React.createContext()` instead of legacy context
+- ✅ **Updated Lifecycle Methods** - Removed deprecated `componentWillMount` and `componentWillReceiveProps`
+- ✅ **No Deprecation Warnings** - All React 18 warnings resolved
+- ✅ **Backward Compatible** - Maintains React Router 3.2.4 API compatibility
 
-The next version of React Router (4.0) has been released! Check out the `master` branch.
+## 📚 Documentation
 
-[4.0 Documentation](https://reacttraining.com/react-router/)
+- **[Upgrade Documentation](./UPGRADE_TO_REACT_18.md)** - Complete guide to React 18/19 upgrade changes
+- **[Quick Reference](./CHANGES_SUMMARY.md)** - Quick summary of changes
+- [Original React Router 3.2.4 Docs](/docs) - API documentation (still applicable)
+- [Examples](/examples) - Working examples with React 18
+- [Stack Overflow](http://stackoverflow.com/questions/tagged/react-router) - Community support
 
-### Docs & Help
+## ⚙️ React Version Support
 
-- [Tutorial – do this first!](https://github.com/reactjs/react-router-tutorial)
-- [Guides and API docs (v2, v3)](/docs)
-- [Troubleshooting guide](https://github.com/ReactTraining/react-router/blob/master/docs/Troubleshooting.md)
-- [Changelog](/CHANGES.md)
-- [Stack Overflow](http://stackoverflow.com/questions/tagged/react-router)
-- [CodePen boilerplate](http://codepen.io/anon/pen/xwQZdy?editors=001) for bug reports
+This version supports:
+- **React 16.3+** (requires `React.createContext()`)
+- **React 17**
+- **React 18**
+- **React 19**
 
-### React 18/19 Support
+> **Note:** React 0.14, 15, and 16.0-16.2 are not supported due to the use of `React.createContext()` which was introduced in React 16.3.
 
-This version has been upgraded to support React 16.3+, 17, 18, and 19. See [UPGRADE_TO_REACT_18.md](./UPGRADE_TO_REACT_18.md) for detailed upgrade documentation.
+## 🔄 Migration from React Router 3.2.4
 
-**Older Versions:**
-
-- 0.13.x - [docs](https://github.com/ReactTraining/react-router/tree/v0.13.6/doc) / [guides](https://github.com/ReactTraining/react-router/tree/v0.13.6/docs/guides) / [code](https://github.com/ReactTraining/react-router/tree/v0.13.6) / [upgrade guide](/upgrade-guides/v1.0.0.md)
-- 1.0.x - [docs](https://github.com/ReactTraining/react-router/tree/1.0.x/docs) / [code](https://github.com/ReactTraining/react-router/tree/1.0.x) / [upgrade guide](/upgrade-guides/v2.0.0.md)
-
-For questions and support, please visit [our channel on Reactiflux](https://discord.gg/0ZcbPKXt5bYaNQ46) or [Stack Overflow](http://stackoverflow.com/questions/tagged/react-router).
+If you're upgrading from the original React Router 3.2.4, see the [UPGRADE_TO_REACT_18.md](./UPGRADE_TO_REACT_18.md) for detailed migration guide. The API remains compatible, but internal implementation has been updated for React 18/19.
 
 ### Browser Support
 
 We support all browsers and environments where React runs.
 
-### Installation
+## 📦 Installation
 
 Using [npm](https://www.npmjs.com/):
 
-    $ npm install --save react-router
+```bash
+npm install --save react-router-v18
+```
 
-Then with a module bundler like [webpack](https://webpack.github.io/) that supports either CommonJS or ES2015 modules, use as you would anything else:
+Or using [yarn](https://yarnpkg.com/):
+
+```bash
+yarn add react-router-v18
+```
+
+Then with a module bundler like [webpack](https://webpack.github.io/) that supports either CommonJS or ES2015 modules:
 
 ```js
 // using an ES6 transpiler, like babel
-import { Router, Route, Link } from 'react-router'
+import { Router, Route, Link, browserHistory } from 'react-router-v18'
 
 // not using an ES6 transpiler
-var Router = require('react-router').Router
-var Route = require('react-router').Route
-var Link = require('react-router').Link
+var Router = require('react-router-v18').Router
+var Route = require('react-router-v18').Route
+var Link = require('react-router-v18').Link
+var browserHistory = require('react-router-v18').browserHistory
 ```
 
-The UMD build is also available on [unpkg](https://unpkg.com):
+## 💡 Usage Example
 
-```html
-<script src="https://unpkg.com/react-router/umd/ReactRouter.min.js"></script>
-```
-
-You can find the library on `window.ReactRouter`.
-
-### What's it look like?
+### React 18 Function Components (Recommended)
 
 ```js
-import React from 'react'
-import { render } from 'react-dom'
-import { Router, Route, Link, browserHistory } from 'react-router'
+import React, { useState, useEffect } from 'react'
+import { createRoot } from 'react-dom/client'
+import { Router, Route, Link, browserHistory } from 'react-router-v18'
 
-const App = React.createClass({/*...*/})
-const About = React.createClass({/*...*/})
-const NoMatch = React.createClass({/*...*/})
+// Function component with hooks
+const App = ({ children }) => (
+  <div>
+    <h1>App</h1>
+    <nav>
+      <Link to="/about">About</Link>
+      <Link to="/users">Users</Link>
+    </nav>
+    {children}
+  </div>
+)
 
-const Users = React.createClass({
-  render() {
-    return (
-      <div>
-        <h1>Users</h1>
-        <div className="master">
-          <ul>
-            {/* use Link to route around the app */}
-            {this.state.users.map(user => (
-              <li key={user.id}><Link to={`/user/${user.id}`}>{user.name}</Link></li>
-            ))}
-          </ul>
-        </div>
-        <div className="detail">
-          {this.props.children}
-        </div>
-      </div>
-    )
-  }
-})
+const About = () => (
+  <div>
+    <h2>About</h2>
+    <p>This is the about page.</p>
+  </div>
+)
 
-const User = React.createClass({
-  componentDidMount() {
-    this.setState({
-      // route components are rendered with useful information, like URL params
-      user: findUserById(this.props.params.userId)
-    })
-  },
+const Users = ({ children }) => {
+  const [users, setUsers] = useState([])
 
-  render() {
-    return (
-      <div>
-        <h2>{this.state.user.name}</h2>
-        {/* etc. */}
-      </div>
-    )
-  }
-})
+  useEffect(() => {
+    // Fetch users data
+    fetchUsers().then(setUsers)
+  }, [])
 
-// Declarative route configuration (could also load this config lazily
-// instead, all you really need is a single root route, you don't need to
-// colocate the entire config).
-render((
+  return (
+    <div>
+      <h2>Users</h2>
+      <ul>
+        {users.map(user => (
+          <li key={user.id}>
+            <Link to={`/user/${user.id}`}>{user.name}</Link>
+          </li>
+        ))}
+      </ul>
+      {children}
+    </div>
+  )
+}
+
+const User = ({ params }) => {
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    // Route components receive params as props
+    findUserById(params.userId).then(setUser)
+  }, [params.userId])
+
+  if (!user) return <div>Loading...</div>
+
+  return (
+    <div>
+      <h3>{user.name}</h3>
+      <p>Email: {user.email}</p>
+    </div>
+  )
+}
+
+// React 18 rendering with createRoot
+const container = document.getElementById('root')
+const root = createRoot(container)
+root.render(
   <Router history={browserHistory}>
     <Route path="/" component={App}>
       <Route path="about" component={About}/>
       <Route path="users" component={Users}>
         <Route path="/user/:userId" component={User}/>
       </Route>
-      <Route path="*" component={NoMatch}/>
     </Route>
   </Router>
-), document.getElementById('root'))
+)
 ```
 
-See more in the [Introduction](/docs/Introduction.md), [Guides](/docs/guides/README.md), and [Examples](/examples).
+### Using createReactClass (Still Supported)
 
-### Versioning and Stability
+If you prefer the class-based API, you can still use `create-react-class`:
 
-We want React Router to be a stable dependency that’s easy to keep current. We take the same approach to versioning as React.js itself: [React Versioning Scheme](https://facebook.github.io/react/blog/2016/02/19/new-versioning-scheme.html).
+```js
+import React from 'react'
+import createReactClass from 'create-react-class'
+import { createRoot } from 'react-dom/client'
+import { Router, Route, Link, browserHistory } from 'react-router-v18'
 
-### Thanks
+const App = createReactClass({
+  render() {
+    return (
+      <div>
+        <h1>App</h1>
+        <nav>
+          <Link to="/about">About</Link>
+          <Link to="/users">Users</Link>
+        </nav>
+        {this.props.children}
+      </div>
+    )
+  }
+})
 
-Thanks to [our sponsors](/SPONSORS.md) for supporting the development of
-React Router.
+// ... rest of components
 
-React Router was initially inspired by Ember's fantastic router. Many thanks to the Ember team.
+// React 18 rendering with createRoot
+const container = document.getElementById('root')
+const root = createRoot(container)
+root.render(
+  <Router history={browserHistory}>
+    <Route path="/" component={App}>
+      <Route path="about" component={About}/>
+    </Route>
+  </Router>
+)
+```
 
-Also, thanks to [BrowserStack](https://www.browserstack.com/) for providing the infrastructure that allows us to run our build in real browsers.
+> **Note:** 
+> - For React 18+, use `createRoot` from `react-dom/client` instead of `ReactDOM.render`
+> - Function components with hooks are recommended for new code
+> - `createReactClass` is still supported for backward compatibility
+> - See [UPGRADE_TO_REACT_18.md](./UPGRADE_TO_REACT_18.md) for complete migration details
 
-[build-badge]: https://img.shields.io/travis/ReactTraining/react-router/master.svg?style=flat-square
-[build]: https://travis-ci.org/ReactTraining/react-router
+See more examples in the [Examples](/examples) directory.
 
-[npm-badge]: https://img.shields.io/npm/v/react-router.svg?style=flat-square
-[npm]: https://www.npmjs.org/package/react-router
+## 🏗️ Based on React Router 3.2.4
 
-[codecov-badge]: https://img.shields.io/codecov/c/github/ReactTraining/react-router/master.svg?style=flat-square
-[codecov]: https://codecov.io/gh/ReactTraining/react-router
+This project is a fork of [React Router 3.2.4](https://github.com/ReactTraining/react-router/tree/v3.2.4) with upgrades for React 18/19 compatibility. The core API remains the same, making it a drop-in replacement for projects using React Router 3.2.4 with React 16.3+.
 
-[discord-badge]: https://img.shields.io/badge/Discord-join%20chat%20%E2%86%92-738bd7.svg?style=flat-square
-[discord]: https://discord.gg/0ZcbPKXt5bYaNQ46
+## 📋 What Changed?
+
+- ✅ Migrated from legacy Context API to `React.createContext()`
+- ✅ Removed deprecated lifecycle methods (`componentWillMount`, `componentWillReceiveProps`)
+- ✅ Updated rendering API for React 18 (`createRoot` instead of `ReactDOM.render`)
+- ✅ Fixed string ref warnings (using callback refs)
+- ✅ Updated animation examples to use `react-transition-group` v4+ API
+- ✅ Removed all React 18 deprecation warnings
+
+See [UPGRADE_TO_REACT_18.md](./UPGRADE_TO_REACT_18.md) for complete details.
+
+## 🔗 Links
+
+- **Repository**: [https://github.com/chengdick/react-router-v18](https://github.com/chengdick/react-router-v18)
+- **Original React Router**: [https://github.com/ReactTraining/react-router](https://github.com/ReactTraining/react-router)
+- **Issues**: [https://github.com/chengdick/react-router-v18/issues](https://github.com/chengdick/react-router-v18/issues)
+
+## 📄 License
+
+MIT - Same as the original React Router 3.2.4
+
+## ⚠️ Disclaimer
+
+**免责声明 / Disclaimer**
+
+This is a community-maintained fork of React Router 3.2.4. The original authors and maintainers of React Router are not responsible for this fork or any issues that may arise from using it.
+
+**Use at your own risk.** The maintainers of this fork are not liable for any damages, data loss, or issues that may occur from using this software.
+
+If you use this code, you acknowledge that:
+- This is a modified version of the original React Router
+- The original authors are not associated with this fork
+- You are using this software at your own risk
+- The maintainers of this fork are not responsible for any consequences
+
+---
+
+这是一个社区维护的 React Router 3.2.4 分支版本。React Router 的原始作者和维护者不对此分支或使用它可能出现的任何问题负责。
+
+**使用风险自负。** 此分支的维护者不对使用本软件可能造成的任何损害、数据丢失或问题承担责任。
+
+如果您使用此代码，即表示您承认：
+- 这是原始 React Router 的修改版本
+- 原始作者与此分支无关
+- 您使用本软件的风险由您自行承担
+- 此分支的维护者不对任何后果负责
+
+## 🙏 Credits
+
+- Original React Router by [ReactTraining](https://github.com/ReactTraining)
+- React Router was initially inspired by Ember's fantastic router
+- This fork maintains compatibility with React Router 3.2.4 API while adding React 18/19 support

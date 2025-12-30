@@ -1,14 +1,15 @@
-import React from 'react'
-import createReactClass from 'create-react-class'
+import React, { Component } from 'react'
 import { withRouter } from 'react-router'
 import auth from '../utils/auth.js'
 
-const Login = createReactClass({
-  getInitialState() {
-    return {
+class Login extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
       error: false
     }
-  },
+    this.handleSubmit = this.handleSubmit.bind(this)
+  }
 
   handleSubmit(event) {
     event.preventDefault()
@@ -28,7 +29,7 @@ const Login = createReactClass({
         this.props.router.replace('/')
       }
     })
-  },
+  }
 
   render() {
     return (
@@ -42,7 +43,6 @@ const Login = createReactClass({
       </form>
     )
   }
-
-})
+}
 
 module.exports = withRouter(Login)

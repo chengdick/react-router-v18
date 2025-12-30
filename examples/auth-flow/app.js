@@ -1,28 +1,29 @@
-import React from 'react'
-import createReactClass from 'create-react-class'
+import React, { Component } from 'react'
 import { render } from '../renderHelper'
 import { browserHistory, Router, Route, Link, withRouter } from 'react-router'
 
 import withExampleBasename from '../withExampleBasename'
 import auth from './auth'
 
-const App = createReactClass({
-  getInitialState() {
-    return {
+class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
       loggedIn: auth.loggedIn()
     }
-  },
+    this.updateAuth = this.updateAuth.bind(this)
+  }
 
   updateAuth(loggedIn) {
     this.setState({
       loggedIn
     })
-  },
+  }
 
   componentDidMount() {
     auth.onChange = this.updateAuth
     auth.login()
-  },
+  }
 
   render() {
     return (
@@ -42,9 +43,9 @@ const App = createReactClass({
       </div>
     )
   }
-})
+}
 
-const Dashboard = createReactClass({
+class Dashboard extends Component {
   render() {
     const token = auth.getToken()
 
@@ -56,67 +57,68 @@ const Dashboard = createReactClass({
       </div>
     )
   }
-})
+}
 
-const Login = withRouter(
-  createReactClass({
-
-    getInitialState() {
-      return {
-        error: false
-      }
-    },
-
-    handleSubmit(event) {
-      event.preventDefault()
-
-      const email = this.emailRef.value
-      const pass = this.passRef.value
-
-      auth.login(email, pass, (loggedIn) => {
-        if (!loggedIn)
-          return this.setState({ error: true })
-
-        const { location } = this.props
-
-        if (location.state && location.state.nextPathname) {
-          this.props.router.replace(location.state.nextPathname)
-        } else {
-          this.props.router.replace('/')
-        }
-      })
-    },
-
-    render() {
-      return (
-        <form onSubmit={this.handleSubmit}>
-          <label><input ref={(el) => { this.emailRef = el }} placeholder="email" defaultValue="joe@example.com" /></label>
-          <label><input ref={(el) => { this.passRef = el }} placeholder="password" /></label> (hint: password1)<br />
-          <button type="submit">login</button>
-          {this.state.error && (
-            <p>Bad login information</p>
-          )}
-        </form>
-      )
+class Login extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      error: false
     }
-  })
-)
+    this.handleSubmit = this.handleSubmit.bind(this)
+  }
 
-const About = createReactClass({
+  handleSubmit(event) {
+    event.preventDefault()
+
+    const email = this.emailRef.value
+    const pass = this.passRef.value
+
+    auth.login(email, pass, (loggedIn) => {
+      if (!loggedIn)
+        return this.setState({ error: true })
+
+      const { location } = this.props
+
+      if (location.state && location.state.nextPathname) {
+        this.props.router.replace(location.state.nextPathname)
+      } else {
+        this.props.router.replace('/')
+      }
+    })
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label><input ref={(el) => { this.emailRef = el }} placeholder="email" defaultValue="joe@example.com" /></label>
+        <label><input ref={(el) => { this.passRef = el }} placeholder="password" /></label> (hint: password1)<br />
+        <button type="submit">login</button>
+        {this.state.error && (
+          <p>Bad login information</p>
+        )}
+      </form>
+    )
+  }
+}
+
+class About extends Component {
   render() {
     return <h1>About</h1>
   }
-})
+}
 
-const Logout = createReactClass({
+class Logout extends Component {
   componentDidMount() {
     auth.logout()
-  },
+  }
 
   render() {
     return <p>You are now logged out</p>
   }
-})
+}
+
+const LoginWithRouter = withRouter(Login)
 
 function requireAuth(nextState, replace) {
   if (!auth.loggedIn()) {
@@ -130,7 +132,7 @@ function requireAuth(nextState, replace) {
 render((
   <Router history={withExampleBasename(browserHistory, __dirname)}>
     <Route path="/" component={App}>
-      <Route path="login" component={Login} />
+      <Route path="login" component={LoginWithRouter} />
       <Route path="logout" component={Logout} />
       <Route path="about" component={About} />
       <Route path="dashboard" component={Dashboard} onEnter={requireAuth} />
