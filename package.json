@@ -16,7 +16,7 @@
     "type": "git",
     "url": "https://github.com/chengdick/react-router-v18.git"
   },
-  "homepage": "https://github.com/chengdick/react-router-v18#readme",
+  "homepage": "https://chengdick.github.io/react-router-v18",
   "bugs": "https://github.com/chengdick/react-router-v18/issues",
   "scripts": {
     "build": "npm run build-cjs && npm run build-es",
