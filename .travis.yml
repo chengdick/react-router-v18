@@ -3,6 +3,7 @@ language: node_js
 node_js:
 - stable
 cache:
+  yarn: true
   directories:
   - node_modules
 before_install:
@@ -12,33 +13,35 @@ before_install:
 
 # 安装依赖和运行测试
 install:
-- npm install
+- yarn install --frozen-lockfile
 
 # 运行测试
 script:
-- npm run lint
-- npm run test-node
+- yarn lint
+- yarn test-node
 # 可选：如果需要浏览器测试，取消下面的注释
-# - npm run test-browser
+# - yarn test-browser
 
 # 测试成功后
 after_success:
-- node_modules/.bin/codecov || true
+- yarn run codecov || npx codecov || true
 
 # 构建示例用于 GitHub Pages
 before_deploy:
-- npm run build-examples
+- yarn build-examples
+- ls -la examples/__build__ || echo "构建目录检查"
 
 # 部署到 GitHub Pages
 deploy:
   provider: pages
   skip_cleanup: true
-  github_token: $GITHUB_TOKEN  # 在 Travis CI 项目设置中配置环境变量1
+  github_token: $GITHUB_TOKEN  # 在 Travis CI 项目设置中配置环境变量
   local_dir: examples
   on:
     branch: master
   keep_history: true
   target_branch: gh-pages
+  verbose: true
 
 # 分支配置
 branches:

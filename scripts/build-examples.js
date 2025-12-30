@@ -10,13 +10,14 @@ function exec(command) {
 
 // 构建 UMD 版本用于示例
 console.log('构建 UMD 版本...')
-exec('npm run build-umd')
-exec('npm run build-min')
+exec('yarn build-umd')
+exec('yarn build-min')
 
 // 构建示例
 console.log('构建示例...')
 process.env.NODE_ENV = 'production'
-exec('webpack --config examples/webpack.config.js --mode production')
+// webpack 1.x 不支持 --mode 参数，使用 NODE_ENV 环境变量
+exec('webpack --config examples/webpack.config.js -p')
 
 // 复制 UMD 文件到 examples/__build__ 目录
 const buildDir = path.join(__dirname, '..', 'examples', '__build__')

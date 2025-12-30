@@ -82,6 +82,15 @@ git push origin master
 # 3. Travis CI 会自动检测并部署
 ```
 
+### 使用 Yarn
+
+本项目使用 Yarn 作为包管理器。Travis CI 配置已设置为使用 Yarn：
+
+- `yarn install --frozen-lockfile` - 安装依赖
+- `yarn lint` - 运行 lint 检查
+- `yarn test-node` - 运行测试
+- `yarn build-examples` - 构建示例
+
 ## 访问 Demo
 
 部署成功后，可以通过以下链接访问：
