@@ -30,6 +30,12 @@ jobs:
       run: yarn test-node
     
     - name: 上传代码覆盖率
+      if: always()
       run: |
-        yarn run codecov || npx codecov || true
+        # 尝试上传代码覆盖率，如果失败则忽略
+        if [ -f coverage/lcov.info ]; then
+          npx --yes codecov@latest --file=./coverage/lcov.info --flags=unittests || echo "代码覆盖率上传失败，继续执行"
+        else
+          echo "未找到覆盖率文件，跳过上传"
+        fi
       continue-on-error: true
