@@ -51,12 +51,8 @@ jobs:
       run: |
         echo "检查构建目录..."
         ls -la examples/__build__ || echo "警告: 构建目录不存在"
-        echo "检查 development-mode 构建文件..."
-        ls -la examples/__build__/development-mode.js || echo "警告: development-mode.js 不存在"
         echo "检查 examples 目录..."
         ls -la examples/ | head -20
-        echo "检查 development-mode 目录..."
-        ls -la examples/development-mode/ || echo "警告: development-mode 目录不存在"
     
     - name: 设置 Pages
       uses: actions/configure-pages@v4
