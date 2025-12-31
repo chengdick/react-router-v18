@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, v1.0.1 ]
   workflow_dispatch:  # 允许手动触发
 
 # 设置 GITHUB_TOKEN 的权限，允许部署到 GitHub Pages
