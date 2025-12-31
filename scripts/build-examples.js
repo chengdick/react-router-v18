@@ -91,7 +91,12 @@ if (basePath && basePath !== '/') {
     // /global.css -> /react-router-v18/global.css
     // /__build__/ -> /react-router-v18/__build__/
     // href="/" -> href="/react-router-v18/"
+    // 注意：只处理不以 basePath 开头的路径，避免重复添加
     content = content.replace(/href="\/([^"]*)"/g, (match, p1) => {
+      // 如果路径已经包含 basePath，跳过
+      if (p1.startsWith(basePath.replace(/^\//, ''))) {
+        return match
+      }
       if (p1 === '') {
         return `href="${basePath}/"`
       }
@@ -99,6 +104,10 @@ if (basePath && basePath !== '/') {
     })
     
     content = content.replace(/src="\/([^"]*)"/g, (match, p1) => {
+      // 如果路径已经包含 basePath，跳过
+      if (p1.startsWith(basePath.replace(/^\//, ''))) {
+        return match
+      }
       return `src="${basePath}/${p1}"`
     })
     
