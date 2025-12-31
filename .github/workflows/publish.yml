@@ -3,7 +3,7 @@ name: Publish to npm
 on:
   push:
     tags:
-      - 'v*'  # 当推送以 v 开头的标签时触发（如 v1.0.0）
+      - 'v*'  # 当推送以 v 开头的标签时触发（如 v1.0.1）
   workflow_dispatch:  # 允许手动触发（发布当前版本）
 
 permissions:
@@ -41,7 +41,24 @@ jobs:
     - name: 检查当前版本
       id: version
       run: |
-        VERSION=$(node -p "require('./package.json').version")
+        # 如果通过 tag 触发，从 tag 名中提取版本号（去掉 v 前缀）
+        if [ "${{ github.event_name }}" = "push" ] && [[ "${{ github.ref_name }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"  # 去掉 v 前缀
+          echo "从 tag 中提取版本号: $VERSION"
+        else
+          # 手动触发或非 tag 推送，从 package.json 读取
+          VERSION=$(node -p "require('./package.json').version")
+          echo "从 package.json 读取版本号: $VERSION"
+        fi
+        
+        # 验证 package.json 中的版本号是否匹配
+        PKG_VERSION=$(node -p "require('./package.json').version")
+        if [ "$VERSION" != "$PKG_VERSION" ]; then
+          echo "⚠️ 警告: tag/分支版本号 ($VERSION) 与 package.json 版本号 ($PKG_VERSION) 不一致"
+          echo "将使用 tag/分支版本号: $VERSION"
+        fi
+        
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "当前版本: $VERSION"
     
@@ -55,6 +72,16 @@ jobs:
         else
           echo "published=false" >> $GITHUB_OUTPUT
           echo "✅ 版本 $VERSION 未发布，将继续发布"
+        fi
+    
+    - name: 更新 package.json 版本号（如果需要）
+      if: steps.version.outputs.version != '' && github.event_name == 'push'
+      run: |
+        VERSION="${{ steps.version.outputs.version }}"
+        PKG_VERSION=$(node -p "require('./package.json').version")
+        if [ "$VERSION" != "$PKG_VERSION" ]; then
+          echo "更新 package.json 版本号从 $PKG_VERSION 到 $VERSION"
+          npm version $VERSION --no-git-tag-version
         fi
     
     - name: 发布到 npm
@@ -84,7 +111,7 @@ jobs:
           ## 安装
           
           ```bash
-          npm install react-router-v18@${{ github.ref_name }}
+          npm install react-router-v18@${{ steps.version.outputs.version }}
           ```
         draft: false
         prerelease: false

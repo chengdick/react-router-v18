@@ -1,0 +1,11 @@
+# 排除构建产物
+examples/__build__/
+node_modules/
+lib/
+es/
+umd/
+
+# 排除其他生成的文件
+*.min.js
+coverage/
+

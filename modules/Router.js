@@ -91,46 +91,11 @@ class Router extends Component {
 
       this.router = createRouterObject(history, this.transitionManager, initialState)
       
-      // For synchronous rendering (e.g., SSR), we need to trigger initial match
-      // Since componentDidMount won't be called in SSR, we set up a synchronous
-      // listener that will be properly cleaned up in componentDidMount (if called)
-      // or componentWillUnmount (for SSR case)
-      let syncState = null
-      let syncError = null
-      
-      // Create a one-time listener to get initial state synchronously if possible
-      const initialListener = (error, state) => {
-        if (error) {
-          syncError = error
-        } else if (state) {
-          syncState = state
-        }
-      }
-      
-      // Call listen which will immediately trigger historyListener with current location
-      // This mimics the original componentWillMount behavior
-      this._initialUnlisten = this.transitionManager.listen(initialListener)
-      
-      // If we got state synchronously (for sync routes), use it
-      if (syncState && syncState.location) {
-        // Clean up the initial listener - componentDidMount will set up the real one
-        if (this._initialUnlisten) {
-          this._initialUnlisten()
-        }
-        this.state = {
-          location: syncState.location,
-          routes: syncState.routes,
-          params: syncState.params,
-          components: syncState.components
-        }
-        return
-      }
-      
-      // If there was an error, we'll handle it in componentDidMount
-      if (syncError) {
-        // Store error to handle later
-        this._initialError = syncError
-      }
+      // Don't set up listener in constructor - wait for componentDidMount
+      // This prevents issues with StrictMode double-mounting
+      // The listener will be set up in componentDidMount which is called
+      // after the component is fully mounted and ready
+      this._needsInitialMatch = true
     }
 
     this.state = initialState
@@ -178,21 +143,9 @@ class Router extends Component {
   }
 
   componentDidMount() {
-    // Set up listener for route changes, replacing componentWillMount logic
-    // transitionManager and router are already initialized in getInitialState
+    // Set up listener for route changes
+    // Only set up once, even if StrictMode causes double-mounting
     if (!this._listenerSetup) {
-      // Clean up initial listener if it was set up in getInitialState
-      if (this._initialUnlisten) {
-        this._initialUnlisten()
-        this._initialUnlisten = null
-      }
-      
-      // Handle any initial error
-      if (this._initialError) {
-        this.handleError(this._initialError)
-        this._initialError = null
-      }
-      
       const listener = (error, state) => {
         if (error) {
           this.handleError(error)
@@ -225,13 +178,13 @@ class Router extends Component {
   }
 
   componentWillUnmount() {
-    if (this._unlisten)
+    // Clean up listener
+    if (this._unlisten) {
       this._unlisten()
-    // Also clean up initial listener if it exists (for SSR case)
-    if (this._initialUnlisten) {
-      this._initialUnlisten()
-      this._initialUnlisten = null
+      this._unlisten = null
     }
+    // Reset flag so that if StrictMode remounts, we can set up again
+    this._listenerSetup = false
   }
 
   render() {

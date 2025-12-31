@@ -1,3 +1,26 @@
+## [v1.0.1](https://github.com/chengdick/react-router-v18/compare/v1.0.0...v1.0.1)
+> Dec 31, 2024
+
+### 🚀 新功能
+- **React 18 StrictMode 支持**: 修复 Router 在 React 18 StrictMode 下的双重挂载问题
+- **开发模式示例**: 新增 `examples/development-mode` 示例，展示 React 18 开发模式特性
+- **单元测试**: 新增 `RouterStrictMode-test.js`，测试 Router 在 StrictMode 下的行为
+
+### 🐛 修复
+- **Router 组件**: 修复 StrictMode 双重挂载导致的监听器重复设置问题
+- **GitHub Pages 部署**: 修复 basename 配置，支持自定义 GitHub Pages 路径
+- **构建脚本**: 优化构建脚本，自动处理 GitHub Pages basePath
+
+### 🔧 改进
+- **发布脚本**: 优化 GitHub Actions 发布流程，支持从 tag 中提取版本号
+- **ESLint 配置**: 添加 `.eslintignore` 文件，排除构建产物
+- **代码质量**: 修复所有 ESLint 格式问题
+
+### 📝 文档
+- **发布指南**: 更新 `PUBLISH.md`，说明 v1.0.1 发布流程
+
+---
+
 ## [v3.0.5](https://github.com/ReactTraining/react-router/compare/v3.0.4...v3.0.5)
 > Apr 10, 2017
 
