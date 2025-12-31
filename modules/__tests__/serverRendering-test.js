@@ -186,20 +186,22 @@ describe('server rendering', function () {
   describe('server/client consistency', () => {
     // Just render to static markup here to avoid having to normalize markup.
 
-    it('should match for synchronous route', () => {
-      let serverString
-
+    it('should match for synchronous route', (done) => {
       match({ routes, location: '/dashboard' }, (error, redirectLocation, renderProps) => {
-        serverString = renderToStaticMarkup(
+        const serverString = renderToStaticMarkup(
           <RouterContext {...renderProps} />
         )
+
+        // Use match to get renderProps for Router component in SSR
+        match({ history: createMemoryHistory('/dashboard'), routes }, (error, redirectLocation, browserRenderProps) => {
+          const browserString = renderToStaticMarkup(
+            <Router {...browserRenderProps} />
+          )
+
+          expect(browserString).toEqual(serverString)
+          done()
+        })
       })
-
-      const browserString = renderToStaticMarkup(
-        <Router history={createMemoryHistory('/dashboard')} routes={routes} />
-      )
-
-      expect(browserString).toEqual(serverString)
     })
 
     it('should match for asynchronous route', done => {
